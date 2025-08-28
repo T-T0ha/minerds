@@ -1,0 +1,189 @@
+/* DatasetMarketplace.css */
+.marketplace-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.marketplace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.marketplace-header h2 {
+  color: #2c3e50;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.refresh-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.no-datasets {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-datasets p {
+  margin-bottom: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.datasets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.dataset-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e1e5e9;
+}
+
+.dataset-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dataset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.dataset-header h3 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  margin: 0;
+  flex: 1;
+}
+
+.dataset-version {
+  background-color: #ecf0f1;
+  color: #7f8c8d;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.dataset-info {
+  margin-bottom: 1.5rem;
+}
+
+.dataset-info p {
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.dataset-info strong {
+  color: #2c3e50;
+}
+
+.dataset-actions {
+  margin-top: auto;
+}
+
+.purchase-button {
+  width: 100%;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.purchase-button:hover:not(:disabled) {
+  background-color: #229954;
+  transform: translateY(-1px);
+}
+
+.purchase-button:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.access-granted {
+  text-align: center;
+}
+
+.access-badge {
+  display: block;
+  background-color: #d5f4e6;
+  color: #27ae60;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  border: 1px solid #b8e6d2;
+}
+
+.download-button {
+  width: 100%;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.download-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .marketplace-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .datasets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

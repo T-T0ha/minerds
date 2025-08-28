@@ -1,0 +1,23 @@
+{
+  "name": "minerds-prototype",
+  "version": "1.0.0",
+  "description": "Healthcare Data Provenance Platform using Blockchain and IPFS",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "blockchain"
+  ],
+  "scripts": {
+    "install-all": "npm install && npm run install:frontend && npm run install:backend && npm run install:blockchain",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:blockchain": "cd blockchain && npm install",
+    "start:blockchain": "cd blockchain && npx hardhat node",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run dev",
+    "deploy": "cd blockchain && npx hardhat run scripts/deploy.js --network localhost"
+  },
+  "author": "HealthChain Team",
+  "license": "MIT"
+}

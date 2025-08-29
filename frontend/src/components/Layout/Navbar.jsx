@@ -3,12 +3,7 @@ import { useWeb3 } from "../../context/Web3Context";
 import "./Navbar.css";
 
 const Navbar = ({ activeTab, setActiveTab }) => {
-  const {
-    account,
-    isConnected,
-    connectWallet,
-    disconnectWallet,
-  } = useWeb3();
+  const { account, isConnected, connectWallet, disconnectWallet } = useWeb3();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [

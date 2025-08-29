@@ -110,6 +110,35 @@
   color: #2c3e50;
 }
 
+.blockchain-info {
+  background-color: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.blockchain-info h4 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.blockchain-info p {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.hash-text {
+  font-family: "Courier New", monospace;
+  background-color: #e9ecef;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  cursor: help;
+}
+
 .dataset-actions {
   margin-top: auto;
 }

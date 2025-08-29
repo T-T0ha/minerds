@@ -19,14 +19,19 @@ export const NETWORK_CONFIG = {
 
 // Simplified ABI for frontend use
 export const DATASET_SBT_ABI = [
+  "function registerAsProvider() external",
+  "function isDatasetProvider(address _address) external view returns (bool)",
   "function registerDataset(string memory _ipfsHash, string memory _metadata, string memory _licenseTerms, uint256 _price) external returns (uint256)",
   "function datasets(uint256) external view returns (string memory ipfsHash, string memory metadata, string memory licenseTerms, address provider, uint256 price, bool isActive, uint256 version, uint256 createdAt)",
   "function hasValidLicense(address _user, uint256 _datasetId) external view returns (bool)",
   "function getUserLicenses(address _user) external view returns (uint256[] memory)",
-  "function grantDatasetProviderRole(address _provider) external",
-  "function DATASET_PROVIDER_ROLE() external view returns (bytes32)",
+  "function issueLicense(uint256 _datasetId, address _licensee, uint256 _duration) external returns (uint256)",
+  "function setMarketplace(address _marketplace) external",
+  "function datasetCounter() external view returns (uint256)",
+  "function licenseCounter() external view returns (uint256)",
   "event DatasetRegistered(uint256 indexed datasetId, address indexed provider, string ipfsHash)",
   "event LicenseIssued(uint256 indexed licenseId, uint256 indexed datasetId, address indexed licensee)",
+  "event ProviderRegistered(address indexed provider)",
 ];
 
 export const MARKETPLACE_ABI = [

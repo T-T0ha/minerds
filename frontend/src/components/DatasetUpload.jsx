@@ -19,30 +19,47 @@ const DatasetUpload = () => {
 
   // Check if user is a dataset provider
   const checkProviderStatus = async () => {
-    if (!account) return;
+    if (!account || !datasetSBTContract) return;
 
     try {
       setCheckingProvider(true);
-      const response = await fetch(
-        `http://localhost:3001/api/is-provider/${account}`
-      );
 
-      if (response.ok) {
-        const data = await response.json();
-        setIsProvider(data.isProvider);
-      }
+      // Check directly from smart contract
+      const isProviderOnChain = await datasetSBTContract.isDatasetProvider(
+        account
+      );
+      setIsProvider(isProviderOnChain);
+
+      console.log("Provider status from blockchain:", isProviderOnChain);
     } catch (error) {
       console.error("Error checking provider status:", error);
+
+      // Fallback to backend check
+      try {
+        const response = await fetch(
+          `http://localhost:3001/api/provider-status/${account}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setIsProvider(data.isProvider);
+        }
+      } catch (backendError) {
+        console.warn(
+          "Both blockchain and backend provider checks failed:",
+          backendError
+        );
+      }
     } finally {
       setCheckingProvider(false);
     }
   };
 
   useEffect(() => {
-    if (account) {
+    if (account && datasetSBTContract) {
       checkProviderStatus();
     }
-  }, [account]);
+  }, [account, datasetSBTContract]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,17 +70,56 @@ const DatasetUpload = () => {
   };
 
   const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      // Validate file type
+      const allowedTypes = [
+        ".csv",
+        ".json",
+        ".xlsx",
+        ".zip",
+        ".pdf",
+        ".xml",
+        ".txt",
+      ];
+      const fileExtension =
+        "." + selectedFile.name.split(".").pop().toLowerCase();
+
+      if (!allowedTypes.includes(fileExtension)) {
+        alert(
+          `Invalid file type. Please select one of: ${allowedTypes.join(", ")}`
+        );
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      // Validate file size (max 100MB)
+      const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+      if (selectedFile.size > maxSize) {
+        alert("File size exceeds 100MB limit. Please choose a smaller file.");
+        e.target.value = ""; // Clear the input
+        return;
+      }
+
+      console.log(
+        "File selected:",
+        selectedFile.name,
+        "Size:",
+        (selectedFile.size / 1024 / 1024).toFixed(2) + "MB"
+      );
+    }
+
     setFormData((prev) => ({
       ...prev,
-      file: e.target.files[0],
+      file: selectedFile,
     }));
   };
 
   // Upload to IPFS via backend API
   const uploadToIPFS = async (file) => {
-    const formData = new FormData();
-    formData.append("dataset", file);
-    formData.append(
+    const uploadFormData = new FormData();
+    uploadFormData.append("dataset", file);
+    uploadFormData.append(
       "metadata",
       JSON.stringify({
         name: formData.name,
@@ -74,13 +130,13 @@ const DatasetUpload = () => {
         uploadedAt: Date.now(),
       })
     );
-    formData.append("licenseTerms", formData.licenseTerms);
-    formData.append("price", formData.price);
-    formData.append("providerAddress", account);
+    uploadFormData.append("licenseTerms", formData.licenseTerms);
+    uploadFormData.append("price", formData.price);
+    uploadFormData.append("providerAddress", account);
 
     const response = await fetch("http://localhost:3001/api/upload-dataset", {
       method: "POST",
-      body: formData,
+      body: uploadFormData,
     });
 
     if (!response.ok) {
@@ -112,9 +168,31 @@ const DatasetUpload = () => {
       const uploadResult = await uploadToIPFS(formData.file);
 
       console.log("Upload successful:", uploadResult);
-      alert(
-        `Dataset uploaded successfully!\nIPFS Hash: ${uploadResult.ipfsHash}\nDataset ID: ${uploadResult.datasetId}`
-      );
+
+      // Create detailed success message with blockchain information
+      const successMessage = `🎉 Dataset Successfully Uploaded to Blockchain!
+
+📋 Blockchain Details:
+• Dataset ID: ${uploadResult.datasetId}
+• Transaction Hash: ${uploadResult.transactionHash || "N/A"}
+• Block Number: ${uploadResult.blockNumber || "N/A"}
+
+🔗 IPFS Storage:
+• IPFS Hash: ${uploadResult.ipfsHash}
+• File Size: ${
+        uploadResult.fileSize
+          ? (uploadResult.fileSize / 1024 / 1024).toFixed(2) + " MB"
+          : "N/A"
+      }
+• Encryption: ${uploadResult.encrypted ? "✅ Encrypted" : "❌ Not Encrypted"}
+
+💰 License Terms:
+• Price: ${formData.price} ETH
+• License Type: ${formData.licenseTerms}
+
+🌐 Your dataset is now available in the marketplace for licensing!`;
+
+      alert(successMessage);
 
       // Reset form
       setFormData({
@@ -272,9 +350,9 @@ const DatasetUpload = () => {
             id="file-input"
             onChange={handleFileChange}
             required
-            accept=".csv,.json,.xlsx,.zip"
+            accept=".csv,.json,.xlsx,.zip,.pdf,.xml,.txt"
           />
-          <small>Supported formats: CSV, JSON, XLSX, ZIP</small>
+          <small>Supported formats: CSV, JSON, XLSX, ZIP, PDF, XML, TXT</small>
         </div>
 
         <div className="upload-info">

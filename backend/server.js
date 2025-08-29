@@ -59,7 +59,15 @@ const upload = multer({
     fileSize: 100 * 1024 * 1024, // 100MB limit
   },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = [".csv", ".json", ".xml", ".txt", ".pdf"];
+    const allowedTypes = [
+      ".csv",
+      ".json",
+      ".xml",
+      ".txt",
+      ".pdf",
+      ".xlsx",
+      ".zip",
+    ];
     const fileExt = path.extname(file.originalname).toLowerCase();
 
     if (allowedTypes.includes(fileExt)) {
@@ -67,7 +75,7 @@ const upload = multer({
     } else {
       cb(
         new Error(
-          "Invalid file type. Only CSV, JSON, XML, TXT, and PDF files are allowed."
+          "Invalid file type. Only CSV, JSON, XML, TXT, PDF, XLSX, and ZIP files are allowed."
         )
       );
     }
@@ -136,6 +144,9 @@ app.post(
         encrypted: uploadResult.encrypted,
         originalSize: uploadResult.originalSize,
         encryptedSize: uploadResult.fileSize,
+        originalFilename: file.originalname, // Store original filename
+        fileExtension: path.extname(file.originalname), // Store file extension
+        encryptionKey: uploadResult.encryptionKey, // Store encryption key (in production, use secure key management)
       };
 
       // Register dataset on blockchain (encryption key stored off-chain for security)
@@ -151,9 +162,16 @@ app.post(
         success: true,
         ipfsHash: uploadResult.ipfsHash,
         transactionHash: txResult.hash,
+        blockNumber: txResult.blockNumber,
         datasetId: txResult.datasetId,
+        fileSize: uploadResult.fileSize,
+        originalSize: uploadResult.originalSize,
         encrypted: uploadResult.encrypted,
         encryptionKey: uploadResult.encryptionKey, // In production, store this securely
+        metadata: encryptedMetadata,
+        price: price,
+        licenseTerms: licenseTerms,
+        provider: providerAddress,
         message:
           "Dataset uploaded to IPFS (encrypted) and registered on blockchain",
       });
@@ -207,15 +225,88 @@ app.get("/api/dataset/:datasetId", async (req, res) => {
       return res.status(404).json({ error: "Dataset not found" });
     }
 
-    // Fetch file from IPFS
-    const fileData = await ipfsService.getFile(datasetInfo.ipfsHash);
+    // Parse metadata to get encryption key and filename info
+    let encryptionKey = null;
+    let filename = `dataset-${datasetId}`;
+
+    try {
+      const metadata = JSON.parse(datasetInfo.metadata);
+      console.log(`📁 Dataset ${datasetId} metadata:`, metadata);
+
+      // Get encryption key if available
+      if (metadata.encrypted && metadata.encryptionKey) {
+        encryptionKey = metadata.encryptionKey;
+        console.log(`🔐 Found encryption key for dataset ${datasetId}`);
+      } else if (metadata.encrypted) {
+        console.warn(
+          `⚠️ Dataset ${datasetId} is encrypted but no decryption key found in metadata!`
+        );
+        console.warn(
+          `⚠️ This dataset was uploaded before encryption key storage was implemented.`
+        );
+        console.warn(
+          `⚠️ File will be served encrypted and may not be readable.`
+        );
+      }
+
+      // Get filename
+      if (metadata.originalFilename) {
+        filename = metadata.originalFilename;
+        console.log(`✅ Using original filename: ${filename}`);
+      } else if (metadata.fileExtension) {
+        filename = `dataset-${datasetId}${metadata.fileExtension}`;
+        console.log(`✅ Using extension filename: ${filename}`);
+      } else if (metadata.fileName) {
+        // Fallback to fileName field if available
+        filename = metadata.fileName;
+        console.log(`✅ Using fileName from metadata: ${filename}`);
+      } else if (metadata.type) {
+        // Fallback: try to guess extension from metadata type
+        const typeToExt = {
+          "application/pdf": ".pdf",
+          "text/plain": ".txt",
+          "text/csv": ".csv",
+          "application/json": ".json",
+          "application/xml": ".xml",
+          "text/xml": ".xml",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            ".xlsx",
+          "application/zip": ".zip",
+        };
+
+        const extension =
+          typeToExt[metadata.type] || typeToExt[metadata.fileType];
+        if (extension) {
+          filename = `dataset-${datasetId}${extension}`;
+          console.log(`🔄 Using guessed extension: ${filename}`);
+        } else {
+          console.log(
+            `⚠️ Unknown file type: ${metadata.type}, using default: ${filename}`
+          );
+        }
+      } else {
+        console.log(`⚠️ No filename info found, using default: ${filename}`);
+      }
+    } catch (error) {
+      console.warn("Could not parse metadata:", error.message);
+    }
+
+    // Fetch and decrypt file from IPFS
+    const fileData = await ipfsService.getFile(
+      datasetInfo.ipfsHash,
+      encryptionKey
+    );
+
+    console.log(`📤 Sending file with name: ${filename}`);
 
     // Set appropriate headers
     res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("X-Original-Filename", filename); // Extra header for debugging
     res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="dataset-${datasetId}"`
-    );
+      "Access-Control-Expose-Headers",
+      "Content-Disposition, X-Original-Filename"
+    ); // Allow frontend to read headers
 
     res.send(fileData);
   } catch (error) {

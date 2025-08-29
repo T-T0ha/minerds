@@ -233,23 +233,32 @@ class BlockchainService {
       const counter = await this.datasetSBTContract.datasetCounter();
       const totalDatasets = Number(counter);
 
+      console.log(`📊 Dataset counter: ${totalDatasets}`);
+
       const datasets = [];
 
       // Fetch all datasets (starting from ID 1)
       for (let i = 1; i <= totalDatasets; i++) {
         try {
+          console.log(`🔍 Fetching dataset ${i}...`);
           const datasetInfo = await this.getDatasetInfo(i);
+          console.log(`📋 Dataset ${i} info:`, datasetInfo);
+
           if (datasetInfo.isActive) {
+            console.log(`✅ Dataset ${i} is active, adding to list`);
             datasets.push({
               datasetId: i,
               ...datasetInfo,
             });
+          } else {
+            console.log(`❌ Dataset ${i} is inactive, skipping`);
           }
         } catch (error) {
           console.warn(`Failed to get dataset ${i}:`, error.message);
         }
       }
 
+      console.log(`📦 Total datasets returned: ${datasets.length}`);
       return datasets;
     } catch (error) {
       console.error("❌ Failed to get all datasets:", error);

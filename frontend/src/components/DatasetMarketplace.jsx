@@ -85,11 +85,48 @@ const DatasetMarketplace = () => {
 
       // Create blob and download file
       const blob = await response.blob();
+
+      // Get filename from headers (try multiple approaches)
+      let filename = `dataset-${datasetId}`;
+
+      // Try Content-Disposition header first
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const originalFilename = response.headers.get("X-Original-Filename");
+
+      console.log("Content-Disposition:", contentDisposition);
+      console.log("X-Original-Filename:", originalFilename);
+
+      if (originalFilename) {
+        filename = originalFilename;
+        console.log("Using X-Original-Filename:", filename);
+      } else if (contentDisposition) {
+        // Try multiple regex patterns for filename extraction
+        const patterns = [
+          /filename\*?=['"]?([^'";\s]+)['"]?/i,
+          /filename=['"]([^'"]+)['"]/i,
+          /filename=([^;,\s]+)/i,
+        ];
+
+        for (const pattern of patterns) {
+          const match = contentDisposition.match(pattern);
+          if (match && match[1]) {
+            filename = match[1];
+            console.log(
+              "Extracted filename from Content-Disposition:",
+              filename
+            );
+            break;
+          }
+        }
+      }
+
+      console.log("Final filename for download:", filename);
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
-      a.download = `dataset-${datasetId}.csv`; // You could get the actual filename from response headers
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -197,6 +234,31 @@ const DatasetMarketplace = () => {
                   <strong>Created:</strong>{" "}
                   {dataset.createdAt.toLocaleDateString()}
                 </p>
+
+                {/* Blockchain Information */}
+                <div className="blockchain-info">
+                  <h4>📋 Blockchain Details:</h4>
+                  <p>
+                    <strong>Dataset ID:</strong> #{dataset.id}
+                  </p>
+                  <p>
+                    <strong>IPFS Hash:</strong>{" "}
+                    <span className="hash-text" title={dataset.ipfsHash}>
+                      {dataset.ipfsHash.slice(0, 12)}...
+                    </span>
+                  </p>
+                  {dataset.metadata.encrypted && (
+                    <p>
+                      <strong>Encryption:</strong> ✅ Encrypted
+                    </p>
+                  )}
+                  {dataset.metadata.fileSize && (
+                    <p>
+                      <strong>File Size:</strong>{" "}
+                      {(dataset.metadata.fileSize / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="dataset-actions">

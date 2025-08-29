@@ -42,11 +42,13 @@ contract DatasetSBT is ERC1155, AccessControl {
     
     uint256 private _datasetIdCounter;
     uint256 private _licenseIdCounter;
+    address public marketplaceContract;
 
     // Events
     event DatasetRegistered(uint256 indexed datasetId, address indexed provider, string ipfsHash);
     event LicenseIssued(uint256 indexed licenseId, uint256 indexed datasetId, address indexed licensee);
     event DatasetUpdated(uint256 indexed datasetId, string newIpfsHash, uint256 version);
+    event ProviderRegistered(address indexed provider);
 
     constructor() ERC1155("") {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -58,6 +60,7 @@ contract DatasetSBT is ERC1155, AccessControl {
      * @dev Set marketplace contract address and grant it admin role
      */
     function setMarketplace(address _marketplace) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        marketplaceContract = _marketplace;
         _grantRole(ADMIN_ROLE, _marketplace);
     }
 
@@ -66,6 +69,7 @@ contract DatasetSBT is ERC1155, AccessControl {
      */
     function registerAsProvider() external {
         _grantRole(DATASET_PROVIDER_ROLE, msg.sender);
+        emit ProviderRegistered(msg.sender);
     }
 
     /**
@@ -102,14 +106,20 @@ contract DatasetSBT is ERC1155, AccessControl {
     }
 
     /**
-     * @dev Issue a license for a dataset (called by marketplace)
+     * @dev Issue a license for a dataset (can be called by marketplace or dataset owner)
      */
     function issueLicense(
         uint256 _datasetId,
         address _licensee,
         uint256 _duration
-    ) external onlyRole(ADMIN_ROLE) returns (uint256) {
+    ) external returns (uint256) {
         require(datasets[_datasetId].isActive, "Dataset not active");
+        require(
+            msg.sender == marketplaceContract || 
+            msg.sender == datasets[_datasetId].provider ||
+            hasRole(ADMIN_ROLE, msg.sender),
+            "Unauthorized to issue license"
+        );
         
         uint256 licenseId = _licenseIdCounter++;
         uint256 expiresAt = block.timestamp + _duration;
@@ -200,6 +210,20 @@ contract DatasetSBT is ERC1155, AccessControl {
      */
     function grantDatasetProviderRole(address _provider) external onlyRole(ADMIN_ROLE) {
         _grantRole(DATASET_PROVIDER_ROLE, _provider);
+    }
+
+    /**
+     * @dev Get the current dataset counter (total number of datasets)
+     */
+    function datasetCounter() external view returns (uint256) {
+        return _datasetIdCounter;
+    }
+
+    /**
+     * @dev Get the current license counter (total number of licenses)
+     */
+    function licenseCounter() external view returns (uint256) {
+        return _licenseIdCounter;
     }
 
     // Required override

@@ -15,7 +15,7 @@ const Header = () => {
     isTestMode,
     testWalletIndex,
     testWallets,
-    isDevelopment,
+    isAmoyTestnet,
   } = useWeb3();
 
   const formatAddress = (address) => {
@@ -39,8 +39,11 @@ const Header = () => {
     <header className="header">
       <div className="header-content">
         <div className="logo">
-          <h1>🏥 HealthChain</h1>
-          <p>Healthcare Data Provenance Platform</p>
+          <h1>💎 Clarity</h1>
+          <p>
+            Decentralized Marketplace for Secure, Transparent, and Verifiable
+            Healthcare Datasets
+          </p>
         </div>
 
         <div className="wallet-section">
@@ -56,7 +59,7 @@ const Header = () => {
                 {loading ? "Connecting..." : "Connect MetaMask"}
               </button>
 
-              {isDevelopment && (
+              {isAmoyTestnet && (
                 <>
                   <span className="separator">or</span>
                   <button
@@ -78,7 +81,7 @@ const Header = () => {
                 </span>
               </div>
 
-              {isTestMode && isDevelopment && (
+              {isTestMode && isAmoyTestnet && (
                 <div className="test-wallet-selector">
                   <select
                     value={testWalletIndex}

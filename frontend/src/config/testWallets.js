@@ -1,43 +1,16 @@
-// Hardhat local test accounts
-// WARNING: These accounts and private keys are publicly known.
-// Never use these on mainnet or any live network - funds WILL BE LOST!
+// Polygon Amoy testnet configuration
+// You can use these accounts for testing on Polygon Amoy
+// Make sure to get test MATIC from the faucet: https://faucet.polygon.technology/
 
 export const TEST_WALLETS = [
   {
-    address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    address: "0x80D387Dc5a93a5aD2BDB7Df8eD81f0D021a52950",
     privateKey:
-      "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    name: "Test Account #0 (Admin)",
-    balance: "10000 ETH",
+      "0x089fd43efc0f45e21f773df72d0d5e24fa4a195c372aca7f75ca49b782de4ef8",
+    name: "Main Account (Deployer)",
+    balance: "16.46 MATIC",
   },
-  {
-    address: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-    privateKey:
-      "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d",
-    name: "Test Account #1 (Provider)",
-    balance: "10000 ETH",
-  },
-  {
-    address: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-    privateKey:
-      "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a",
-    name: "Test Account #2 (Customer)",
-    balance: "10000 ETH",
-  },
-  {
-    address: "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
-    privateKey:
-      "0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6",
-    name: "Test Account #3 (Customer)",
-    balance: "10000 ETH",
-  },
-  {
-    address: "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
-    privateKey:
-      "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a",
-    name: "Test Account #4 (Customer)",
-    balance: "10000 ETH",
-  },
+  // Add more accounts as needed for testing
 ];
 
 // Helper function to get test wallet by index
@@ -52,15 +25,12 @@ export const getTestWallet = (index = 0) => {
   return TEST_WALLETS[index];
 };
 
-// Check if we're in development mode
-export const isDevelopment = () => {
-  return (
-    import.meta.env.MODE === "development" ||
-    window.location.hostname === "localhost"
-  );
+// Check if we're on Polygon Amoy testnet
+export const isAmoyTestnet = () => {
+  return window.ethereum?.chainId === "0x13882"; // 80002 in hex
 };
 
-// Get RPC URL for local testing
-export const getLocalRpcUrl = () => {
-  return "http://127.0.0.1:8545";
+// Get RPC URL for Polygon Amoy
+export const getAmoyRpcUrl = () => {
+  return "https://polygon-amoy.g.alchemy.com/v2/KfUG5RUwO2iaiZq8P_r3E";
 };

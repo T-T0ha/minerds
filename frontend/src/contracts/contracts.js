@@ -1,23 +1,23 @@
-// Contract addresses - Update these after deployment
+// Contract addresses - Polygon Amoy Testnet (Updated)
 export const CONTRACT_ADDRESSES = {
-  DATASET_SBT: "0x5FbDB2315678afecb367f032d93F642f64180aa3", // Update after deployment
-  MARKETPLACE: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", // Update after deployment
+  DATASET_SBT: "0x2Bd44D8b04c8A6d4fFeA6E209b24157DE9C17efA", // Polygon Amoy (New)
+  MARKETPLACE: "0x7ba515227AD1eC6d9Fb70c0fE72531c438911F14", // Polygon Amoy (New)
 };
 
-// Network configuration
+// Network configuration - Polygon Amoy Testnet
 export const NETWORK_CONFIG = {
-  chainId: 1337, // Hardhat local network
-  chainName: "Hardhat Local",
+  chainId: 80002, // Polygon Amoy testnet
+  chainName: "Polygon Amoy Testnet",
   nativeCurrency: {
-    name: "ETH",
-    symbol: "ETH",
+    name: "MATIC",
+    symbol: "MATIC",
     decimals: 18,
   },
-  rpcUrls: ["http://127.0.0.1:8545"],
-  blockExplorerUrls: [""],
+  rpcUrls: ["https://polygon-amoy.g.alchemy.com/v2/KfUG5RUwO2iaiZq8P_r3E"],
+  blockExplorerUrls: ["https://amoy.polygonscan.com/"],
 };
 
-// Simplified ABI for frontend use
+// Simplified ABI for frontend use (Updated with SBT functions)
 export const DATASET_SBT_ABI = [
   "function registerAsProvider() external",
   "function isDatasetProvider(address _address) external view returns (bool)",
@@ -29,6 +29,10 @@ export const DATASET_SBT_ABI = [
   "function setMarketplace(address _marketplace) external",
   "function datasetCounter() external view returns (uint256)",
   "function licenseCounter() external view returns (uint256)",
+  "function isDatasetSBTized(uint256 _datasetId) external view returns (bool)",
+  "function getDatasetOwner(uint256 _datasetId) external view returns (address)",
+  "function balanceOf(address account, uint256 id) external view returns (uint256)",
+  "function licenses(uint256) external view returns (uint256 datasetId, address licensee, uint256 issuedAt, uint256 expiresAt, bool isActive)",
   "event DatasetRegistered(uint256 indexed datasetId, address indexed provider, string ipfsHash)",
   "event LicenseIssued(uint256 indexed licenseId, uint256 indexed datasetId, address indexed licensee)",
   "event ProviderRegistered(address indexed provider)",

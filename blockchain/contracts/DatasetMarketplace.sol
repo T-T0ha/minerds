@@ -16,8 +16,8 @@ contract DatasetMarketplace is ReentrancyGuard, Ownable {
     // Supported payment tokens (stablecoins)
     mapping(address => bool) public supportedTokens;
     
-    // Platform fee (in basis points, e.g., 250 = 2.5%)
-    uint256 public platformFee = 250;
+    // Platform fee (10% = 1000 basis points)
+    uint256 public platformFee = 1000; // 10% commission for admin
     uint256 public constant MAX_FEE = 1000; // 10% max
     
     // Marketplace earnings
@@ -78,11 +78,11 @@ contract DatasetMarketplace is ReentrancyGuard, Ownable {
             totalAmount = price;
         }
 
-        // Calculate platform fee
-        uint256 fee = (totalAmount * platformFee) / 10000;
+        // Calculate platform fee (10% for admin)
+        uint256 fee = (totalAmount * platformFee) / 10000; // 1000/10000 = 10%
         uint256 providerAmount = totalAmount - fee;
 
-        // Transfer payment to provider
+        // Transfer payment to provider (90%)
         if (_paymentToken == address(0)) {
             payable(provider).transfer(providerAmount);
             platformEarnings[address(0)] += fee;
@@ -92,8 +92,8 @@ contract DatasetMarketplace is ReentrancyGuard, Ownable {
             platformEarnings[_paymentToken] += fee;
         }
 
-        // Issue license SBT
-        uint256 licenseId = datasetSBT.issueLicense(_datasetId, msg.sender, _licenseDuration);
+        // Issue license (no SBT minting - just access tracking)
+        datasetSBT.issueLicense(_datasetId, msg.sender, _licenseDuration);
 
         // Record purchase
         uint256 purchaseId = _purchaseIdCounter++;

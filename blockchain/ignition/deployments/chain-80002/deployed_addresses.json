@@ -1,0 +1,22 @@
+{
+  "chainId": "80002",
+  "contracts": {
+    "HealthchainAmoyModule#DatasetSBT": {
+      "address": "",
+      "constructorArgs": [],
+      "deployedBytecodeSize": 0,
+      "contractName": "DatasetSBT",
+      "sourceName": "contracts/DatasetSBT.sol"
+    },
+    "HealthchainAmoyModule#DatasetMarketplace": {
+      "address": "",
+      "constructorArgs": [],
+      "deployedBytecodeSize": 0,
+      "contractName": "DatasetMarketplace",
+      "sourceName": "contracts/DatasetMarketplace.sol"
+    }
+  },
+  "transactions": {},
+  "executionStateVersion": "1",
+  "networkName": "amoy"
+}

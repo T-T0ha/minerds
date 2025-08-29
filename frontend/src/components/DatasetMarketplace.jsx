@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useWeb3 } from "../context/Web3Context";
 import { ethers } from "ethers";
+import DatasetFeedback from "./DatasetFeedback";
+import DatasetFeedbackDisplay from "./DatasetFeedbackDisplay";
 import "./DatasetMarketplace.css";
 
 const DatasetMarketplace = () => {
@@ -9,6 +11,13 @@ const DatasetMarketplace = () => {
   const [datasets, setDatasets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [purchasing, setPurchasing] = useState(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState(null);
+  const [showFeedbackView, setShowFeedbackView] = useState(false);
+  const [feedbackDataset, setFeedbackDataset] = useState(null);
+  const [sbtStatus, setSbtStatus] = useState({});
+
+  // Check if a dataset is properly SBT-ized (provider owns SBT)
 
   // Load datasets from backend API
   const loadDatasets = async () => {
@@ -22,11 +31,16 @@ const DatasetMarketplace = () => {
 
       const backendDatasets = await response.json();
 
-      // For each dataset, check if user has access
+      // For each dataset, check if user has access and SBT status
       const datasetsWithAccess = await Promise.all(
         backendDatasets.map(async (dataset) => {
           let hasAccess = false;
-          if (account && dataset.datasetId) {
+
+          if (
+            account &&
+            dataset.datasetId !== null &&
+            dataset.datasetId !== undefined
+          ) {
             try {
               const accessResponse = await fetch(
                 `http://localhost:3001/api/verify-license/${dataset.datasetId}/${account}`
@@ -161,7 +175,16 @@ const DatasetMarketplace = () => {
       // Reload datasets to update access status
       await loadDatasets();
 
-      alert("Dataset license purchased successfully!");
+      alert(
+        "Dataset license purchased successfully! You are now a Dataset Curator for this dataset."
+      );
+
+      // Automatically show feedback modal after successful purchase
+      const purchasedDataset = datasets.find((d) => d.id === datasetId);
+      if (purchasedDataset) {
+        setSelectedDataset(purchasedDataset);
+        setShowFeedback(true);
+      }
     } catch (error) {
       console.error("Error purchasing dataset:", error);
       alert("Error purchasing dataset: " + error.message);
@@ -247,6 +270,7 @@ const DatasetMarketplace = () => {
                       {dataset.ipfsHash.slice(0, 12)}...
                     </span>
                   </p>
+
                   {dataset.metadata.encrypted && (
                     <p>
                       <strong>Encryption:</strong> ✅ Encrypted
@@ -259,18 +283,44 @@ const DatasetMarketplace = () => {
                     </p>
                   )}
                 </div>
+
+                {/* Feedback Summary */}
+                <div className="feedback-summary-section">
+                  <button
+                    className="view-feedback-btn"
+                    onClick={() => {
+                      setFeedbackDataset(dataset);
+                      setShowFeedbackView(true);
+                    }}
+                  >
+                    <span className="feedback-icon">💬</span>
+                    <span>View Customer Feedback</span>
+                    <span className="feedback-count">(4 reviews)</span>
+                  </button>
+                </div>
               </div>
 
               <div className="dataset-actions">
                 {dataset.hasAccess ? (
                   <div className="access-granted">
-                    <span className="access-badge">✅ Access Granted</span>
-                    <button
-                      className="download-button"
-                      onClick={() => downloadDataset(dataset.id)}
-                    >
-                      Download Dataset
-                    </button>
+                    <span className="access-badge">✅ Dataset Curator</span>
+                    <div className="curator-actions">
+                      <button
+                        className="download-button"
+                        onClick={() => downloadDataset(dataset.id)}
+                      >
+                        📥 Download Dataset
+                      </button>
+                      <button
+                        className="feedback-button"
+                        onClick={() => {
+                          setSelectedDataset(dataset);
+                          setShowFeedback(true);
+                        }}
+                      >
+                        🎯 Provide Feedback
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -280,12 +330,68 @@ const DatasetMarketplace = () => {
                   >
                     {purchasing === dataset.id
                       ? "Purchasing..."
-                      : `Purchase License - ${dataset.price} ETH`}
+                      : `Purchase License & Become Curator - ${dataset.price} ETH`}
                   </button>
                 )}
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Dataset Feedback Modal */}
+      {showFeedback && selectedDataset && (
+        <DatasetFeedback
+          dataset={{
+            id: selectedDataset.id,
+            title:
+              selectedDataset.metadata.name || `Dataset #${selectedDataset.id}`,
+            provider: selectedDataset.provider,
+          }}
+          userAddress={account}
+          onClose={() => {
+            setShowFeedback(false);
+            setSelectedDataset(null);
+          }}
+        />
+      )}
+
+      {/* Customer Feedback View Modal */}
+      {showFeedbackView && feedbackDataset && (
+        <div
+          className="feedback-view-modal"
+          onClick={(e) => {
+            if (e.target.className === "feedback-view-modal") {
+              setShowFeedbackView(false);
+              setFeedbackDataset(null);
+            }
+          }}
+        >
+          <div className="feedback-view-content">
+            <div className="feedback-view-header">
+              <h3>
+                Customer Feedback -{" "}
+                {feedbackDataset.metadata.name ||
+                  `Dataset #${feedbackDataset.id}`}
+              </h3>
+              <button
+                className="close-feedback-view"
+                onClick={() => {
+                  setShowFeedbackView(false);
+                  setFeedbackDataset(null);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <DatasetFeedbackDisplay
+              datasetId={feedbackDataset.id}
+              datasetTitle={
+                feedbackDataset.metadata.name ||
+                `Dataset #${feedbackDataset.id}`
+              }
+            />
+          </div>
         </div>
       )}
     </div>

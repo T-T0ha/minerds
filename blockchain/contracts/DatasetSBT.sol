@@ -80,7 +80,7 @@ contract DatasetSBT is ERC1155, AccessControl {
     }
 
     /**
-     * @dev Register a new dataset
+     * @dev Register a new dataset and mint SBT to provider
      */
     function registerDataset(
         string memory _ipfsHash,
@@ -101,12 +101,15 @@ contract DatasetSBT is ERC1155, AccessControl {
             createdAt: block.timestamp
         });
 
+        // Mint SBT to provider for permanent dataset ownership
+        _mint(msg.sender, datasetId, 1, "");
+
         emit DatasetRegistered(datasetId, msg.sender, _ipfsHash);
         return datasetId;
     }
 
     /**
-     * @dev Issue a license for a dataset (can be called by marketplace or dataset owner)
+     * @dev Issue a license for a dataset (access only, no SBT minting)
      */
     function issueLicense(
         uint256 _datasetId,
@@ -134,8 +137,8 @@ contract DatasetSBT is ERC1155, AccessControl {
 
         userLicenses[_licensee].push(licenseId);
         
-        // Mint SBT to licensee
-        _mint(_licensee, licenseId, 1, "");
+        // Note: No SBT minting here - only providers get SBTs for ownership
+        // Customers just get access licenses tracked in the licenses mapping
         
         emit LicenseIssued(licenseId, _datasetId, _licensee);
         return licenseId;
@@ -224,6 +227,27 @@ contract DatasetSBT is ERC1155, AccessControl {
      */
     function licenseCounter() external view returns (uint256) {
         return _licenseIdCounter;
+    }
+
+    /**
+     * @dev Check if a dataset is properly SBT-ized (provider owns the SBT)
+     */
+    function isDatasetSBTized(uint256 _datasetId) external view returns (bool) {
+        if (_datasetId >= _datasetIdCounter) return false;
+        
+        Dataset memory dataset = datasets[_datasetId];
+        if (!dataset.isActive) return false;
+        
+        // Check if provider owns the SBT for this dataset
+        return balanceOf(dataset.provider, _datasetId) > 0;
+    }
+
+    /**
+     * @dev Get dataset owner (should be the provider who has the SBT)
+     */
+    function getDatasetOwner(uint256 _datasetId) external view returns (address) {
+        require(_datasetId < _datasetIdCounter, "Dataset does not exist");
+        return datasets[_datasetId].provider;
     }
 
     // Required override

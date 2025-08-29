@@ -1,0 +1,204 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useWeb3 } fro        <div className="navbar-brand">
+          <div className="brand-icon">💎</div>
+          <div className="brand-content">
+            <div className="brand-text">Clarity</div>
+            <div className="brand-subtitle">Secure Healthcare Data</div>
+          </div>
+        </div>./context/Web3Context";
+import "./Navbar.css";
+
+const Navbar = ({ activeTab, setActiveTab }) => {
+  const {
+    account,
+    isConnected,
+    connectWallet,
+    disconnectWallet,
+    isAmoyTestnet,
+    isTestMode,
+    testWallets,
+    testWalletIndex,
+    switchTestWallet,
+  } = useWeb3();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showWalletOptions, setShowWalletOptions] = useState(false);
+  const walletOptionsRef = useRef(null);
+
+  const menuItems = [
+    { id: "marketplace", label: "Marketplace", icon: "🏪", priority: true },
+    { id: "dashboard", label: "Dashboard", icon: "📊", priority: true },
+    { id: "upload", label: "Upload", icon: "📤", priority: true },
+    { id: "licenses", label: "Licenses", icon: "📋", priority: true },
+    { id: "verify", label: "Verify", icon: "🔍", priority: false },
+    { id: "register", label: "Register", icon: "🏢", priority: false },
+    {
+      id: "monitoring",
+      label: "Monitor",
+      icon: "�",
+      roles: ["admin", "dao"],
+      priority: false,
+    },
+    { id: "users", label: "Users", icon: "👥", roles: ["admin"], priority: false },
+  ];
+
+  const handleConnect = async () => {
+    if (isConnected) {
+      disconnectWallet();
+      setShowWalletOptions(false);
+    } else {
+      if (isAmoyTestnet) {
+        setShowWalletOptions(true);
+      } else {
+        await connectWallet(false);
+      }
+    }
+  };
+
+  const handleTestWalletConnect = async (walletIndex) => {
+    await connectWallet(true, walletIndex);
+    setShowWalletOptions(false);
+  };
+
+  const handleRealWalletConnect = async () => {
+    await connectWallet(false);
+    setShowWalletOptions(false);
+  };
+
+  // Close wallet options when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        walletOptionsRef.current &&
+        !walletOptionsRef.current.contains(event.target)
+      ) {
+        setShowWalletOptions(false);
+      }
+    };
+
+    if (showWalletOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showWalletOptions]);
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-brand">
+          <span className="brand-icon">�</span>
+          <span className="brand-text">Clarity</span>
+          <span className="brand-subtitle">
+            Decentralized Healthcare Datasets
+          </span>
+        </div>
+
+        <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              className={`navbar-item ${activeTab === item.id ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab(item.id);
+                setIsMenuOpen(false);
+              }}
+            >
+              <span className="navbar-icon">{item.icon}</span>
+              <span className="navbar-label">{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="navbar-actions">
+          {isConnected && (
+            <div className="user-info">
+              <div className="user-address">
+                {account?.slice(0, 6)}...{account?.slice(-4)}
+              </div>
+              <div className="user-role">
+                {isTestMode
+                  ? `Test: ${testWallets[testWalletIndex]?.name}`
+                  : "Dataset Curator"}
+              </div>
+              {isTestMode && (
+                <select
+                  className="test-wallet-selector"
+                  value={testWalletIndex}
+                  onChange={(e) => switchTestWallet(parseInt(e.target.value))}
+                >
+                  {testWallets.map((wallet, index) => (
+                    <option key={index} value={index}>
+                      {wallet.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+
+          <div className="wallet-connection" ref={walletOptionsRef}>
+            <button className="connect-button" onClick={handleConnect}>
+              {isConnected ? (
+                <>
+                  <span className="connect-icon">🔓</span>
+                  Disconnect
+                </>
+              ) : (
+                <>
+                  <span className="connect-icon">🔗</span>
+                  Connect Wallet
+                </>
+              )}
+            </button>
+
+            {showWalletOptions && !isConnected && (
+              <div className="wallet-options">
+                <div className="wallet-options-header">Choose Wallet Type:</div>
+                <button
+                  className="wallet-option-btn test-wallet-btn"
+                  onClick={() => handleTestWalletConnect(0)}
+                >
+                  🧪 Test Wallet (Hardhat)
+                </button>
+                <button
+                  className="wallet-option-btn real-wallet-btn"
+                  onClick={handleRealWalletConnect}
+                >
+                  🦊 MetaMask / Real Wallet
+                </button>
+                <div className="test-wallets-list">
+                  <div className="test-wallets-header">Test Accounts:</div>
+                  {testWallets.map((wallet, index) => (
+                    <button
+                      key={index}
+                      className="test-wallet-item"
+                      onClick={() => handleTestWalletConnect(index)}
+                    >
+                      <span className="wallet-name">{wallet.name}</span>
+                      <span className="wallet-address">
+                        {wallet.address.slice(0, 10)}...
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

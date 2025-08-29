@@ -1,0 +1,20 @@
+{
+  "network": "amoy",
+  "chainId": "80002",
+  "timestamp": "2025-08-29T20:09:29.983Z",
+  "deployer": "0x80D387Dc5a93a5aD2BDB7Df8eD81f0D021a52950",
+  "contracts": {
+    "DatasetSBT": {
+      "address": "0x2Bd44D8b04c8A6d4fFeA6E209b24157DE9C17efA",
+      "deploymentTx": "0x52183512cc04b47c69c5d7d40288597d517d118a86bca21720a53234c9202e0b"
+    },
+    "DatasetMarketplace": {
+      "address": "0x7ba515227AD1eC6d9Fb70c0fE72531c438911F14",
+      "deploymentTx": "0x8442fc8133f6882d3156848850ed526a8ce9212f9ac51c628d3a926ccb3ffc2d"
+    }
+  },
+  "gasUsed": {
+    "DatasetSBT": "2021808",
+    "DatasetMarketplace": "1008584"
+  }
+}

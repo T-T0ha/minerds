@@ -9,8 +9,8 @@ import {
 import {
   TEST_WALLETS,
   getTestWallet,
-  isDevelopment,
-  getLocalRpcUrl,
+  isAmoyTestnet,
+  getAmoyRpcUrl,
 } from "../config/testWallets";
 
 const Web3Context = createContext();
@@ -40,15 +40,11 @@ export const Web3Provider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      if (!isDevelopment()) {
-        throw new Error("Test wallets can only be used in development mode");
-      }
-
       // Get test wallet
       const testWallet = getTestWallet(walletIndex);
 
-      // Create provider and signer for local Hardhat network
-      const web3Provider = new ethers.JsonRpcProvider(getLocalRpcUrl());
+      // Create provider and signer for Polygon Amoy network
+      const web3Provider = new ethers.JsonRpcProvider(getAmoyRpcUrl());
       const web3Signer = new ethers.Wallet(testWallet.privateKey, web3Provider);
 
       // Create contract instances
@@ -110,7 +106,7 @@ export const Web3Provider = ({ children }) => {
       // Check if we're on the correct network
       const network = await web3Provider.getNetwork();
       if (Number(network.chainId) !== NETWORK_CONFIG.chainId) {
-        await switchToLocalNetwork();
+        await switchToAmoyNetwork();
       }
 
       // Create contract instances
@@ -140,8 +136,8 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
-  // Switch to local Hardhat network
-  const switchToLocalNetwork = async () => {
+  // Switch to Polygon Amoy network
+  const switchToAmoyNetwork = async () => {
     try {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -178,6 +174,20 @@ export const Web3Provider = ({ children }) => {
     setError(null);
     setIsTestMode(false);
     setTestWalletIndex(0);
+  };
+
+  // Connect wallet (choose between test and real wallet)
+  const connectWallet = async (useTestWallet = false, walletIndex = 0) => {
+    if (useTestWallet) {
+      await initTestWallet(walletIndex);
+    } else {
+      await initWeb3();
+    }
+  };
+
+  // Disconnect wallet
+  const disconnectWallet = () => {
+    disconnect();
   };
 
   // Listen for account changes (only for MetaMask)
@@ -219,12 +229,14 @@ export const Web3Provider = ({ children }) => {
     initWeb3,
     initTestWallet,
     switchTestWallet,
+    connectWallet,
+    disconnectWallet,
     disconnect,
     isConnected: !!account,
     isTestMode,
     testWalletIndex,
     testWallets: TEST_WALLETS,
-    isDevelopment: isDevelopment(),
+    isAmoyTestnet: isAmoyTestnet(),
   };
 
   return <Web3Context.Provider value={value}>{children}</Web3Context.Provider>;

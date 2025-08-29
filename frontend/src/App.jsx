@@ -1,17 +1,24 @@
 import React from "react";
 import { Web3Provider } from "./context/Web3Context";
-import Header from "./components/Header";
+import Navbar from "./components/Layout/Navbar";
+import Dashboard from "./components/Dashboard";
 import DatasetMarketplace from "./components/DatasetMarketplace";
 import DatasetUpload from "./components/DatasetUpload";
 import MyLicenses from "./components/MyLicenses";
 import ProviderRegistration from "./components/ProviderRegistration";
+import DAOGovernance from "./components/DAOGovernance";
+import TransactionMonitoring from "./components/TransactionMonitoring";
+import UserManagement from "./components/UserManagement";
+import OwnershipVerification from "./components/OwnershipVerification";
 import "./App.css";
 
 function App() {
-  const [activeTab, setActiveTab] = React.useState("marketplace");
+  const [activeTab, setActiveTab] = React.useState("dashboard");
 
   const renderContent = () => {
     switch (activeTab) {
+      case "dashboard":
+        return <Dashboard />;
       case "marketplace":
         return <DatasetMarketplace />;
       case "register":
@@ -20,43 +27,21 @@ function App() {
         return <DatasetUpload />;
       case "licenses":
         return <MyLicenses />;
+      case "verify":
+        return <OwnershipVerification />;
+      case "monitoring":
+        return <TransactionMonitoring />;
+      case "users":
+        return <UserManagement />;
       default:
-        return <DatasetMarketplace />;
+        return <Dashboard />;
     }
   };
 
   return (
     <Web3Provider>
       <div className="App">
-        <Header />
-
-        <nav className="nav-tabs">
-          <button
-            className={`nav-tab ${activeTab === "marketplace" ? "active" : ""}`}
-            onClick={() => setActiveTab("marketplace")}
-          >
-            📊 Marketplace
-          </button>
-          <button
-            className={`nav-tab ${activeTab === "register" ? "active" : ""}`}
-            onClick={() => setActiveTab("register")}
-          >
-            🏥 Become Provider
-          </button>
-          <button
-            className={`nav-tab ${activeTab === "upload" ? "active" : ""}`}
-            onClick={() => setActiveTab("upload")}
-          >
-            📤 Upload Dataset
-          </button>
-          <button
-            className={`nav-tab ${activeTab === "licenses" ? "active" : ""}`}
-            onClick={() => setActiveTab("licenses")}
-          >
-            🎫 My Licenses
-          </button>
-        </nav>
-
+        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
         <main className="main-content">{renderContent()}</main>
       </div>
     </Web3Provider>

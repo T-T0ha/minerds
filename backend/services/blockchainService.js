@@ -4,6 +4,7 @@ const { ethers } = require("ethers");
 const DATASET_SBT_ABI = [
   "function registerDataset(string memory _ipfsHash, string memory _metadata, string memory _licenseTerms, uint256 _price) external returns (uint256)",
   "function datasets(uint256) external view returns (string memory ipfsHash, string memory metadata, string memory licenseTerms, address provider, uint256 price, bool isActive, uint256 version, uint256 createdAt)",
+  "function licenses(uint256) external view returns (uint256 datasetId, address licensee, uint256 issuedAt, uint256 expiresAt, bool isActive)",
   "function hasValidLicense(address _user, uint256 _datasetId) external view returns (bool)",
   "function getUserLicenses(address _user) external view returns (uint256[] memory)",
   "function registerAsProvider() external",
@@ -203,9 +204,30 @@ class BlockchainService {
       const licenses = [];
       for (const licenseId of licenseIds) {
         try {
-          const datasetInfo = await this.getDatasetInfo(licenseId);
+          console.log(`🔍 Processing license ID: ${licenseId}`);
+
+          // First get the license details to find the dataset ID
+          const licenseDetails = await this.datasetSBTContract.licenses(
+            licenseId
+          );
+          const datasetId = licenseDetails.datasetId.toString();
+
+          console.log(`📋 License ${licenseId} -> Dataset ${datasetId}`);
+          console.log(`🔗 License details:`, {
+            datasetId: datasetId,
+            licensee: licenseDetails.licensee,
+            isActive: licenseDetails.isActive,
+            issuedAt: licenseDetails.issuedAt.toString(),
+            expiresAt: licenseDetails.expiresAt.toString(),
+          });
+
+          // Then get the dataset info using the correct dataset ID
+          const datasetInfo = await this.getDatasetInfo(datasetId);
+          console.log(`📊 Dataset ${datasetId} info:`, datasetInfo);
+
           licenses.push({
             licenseId: licenseId.toString(),
+            datasetId: datasetId,
             ...datasetInfo,
           });
         } catch (error) {
@@ -237,8 +259,8 @@ class BlockchainService {
 
       const datasets = [];
 
-      // Fetch all datasets (starting from ID 1)
-      for (let i = 1; i <= totalDatasets; i++) {
+      // Fetch all datasets (starting from ID 0, not 1!)
+      for (let i = 0; i < totalDatasets; i++) {
         try {
           console.log(`🔍 Fetching dataset ${i}...`);
           const datasetInfo = await this.getDatasetInfo(i);

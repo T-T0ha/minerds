@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useWeb3 } from "../context/Web3Context";
+import DatasetFeedback from "./DatasetFeedback";
 import "./MyLicenses.css";
 
 const MyLicenses = () => {
@@ -7,6 +8,8 @@ const MyLicenses = () => {
     useWeb3();
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [selectedLicense, setSelectedLicense] = useState(null);
 
   const loadUserLicenses = async () => {
     if (!account) return;
@@ -25,20 +28,39 @@ const MyLicenses = () => {
 
       const backendLicenses = await response.json();
 
-      const processedLicenses = backendLicenses.map((license) => ({
-        licenseId: license.licenseId,
-        datasetId: license.licenseId, // Simplified assumption for demo
-        ipfsHash: license.ipfsHash,
-        metadata: JSON.parse(license.metadata || "{}"),
-        licenseTerms: license.licenseTerms,
-        provider: license.provider,
-        price: license.price,
-        version: Number(license.version),
-        createdAt: new Date(license.createdAt),
-        // For demo purposes, assume 30-day license
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        isValid: true,
-      }));
+      const processedLicenses = backendLicenses.map((license) => {
+        // Ensure datasetId exists and handle undefined case
+        const datasetId =
+          license.datasetId !== undefined
+            ? license.datasetId
+            : license.licenseId;
+
+        console.log("Processing license:", {
+          licenseId: license.licenseId,
+          datasetId: license.datasetId,
+          fallbackDatasetId: datasetId,
+          hasMetadata: !!license.metadata,
+        });
+
+        return {
+          licenseId: license.licenseId,
+          datasetId: datasetId,
+          ipfsHash: license.ipfsHash || "",
+          metadata: JSON.parse(
+            license.metadata || '{"name":"Unknown Dataset"}'
+          ),
+          licenseTerms: license.licenseTerms || "Standard Terms",
+          provider: license.provider || "0x000000...",
+          price: license.price || "0",
+          version: Number(license.version || 1),
+          createdAt: license.createdAt
+            ? new Date(license.createdAt)
+            : new Date(),
+          // For demo purposes, assume 30-day license
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          isValid: true,
+        };
+      });
 
       setLicenses(processedLicenses);
     } catch (error) {
@@ -103,7 +125,7 @@ const MyLicenses = () => {
   return (
     <div className="licenses-container">
       <div className="licenses-header">
-        <h2>My Dataset Licenses</h2>
+        <h2>My Dataset Curator Licenses</h2>
         <button
           className="refresh-button"
           onClick={loadUserLicenses}
@@ -117,8 +139,10 @@ const MyLicenses = () => {
         <div className="loading">Loading your licenses...</div>
       ) : licenses.length === 0 ? (
         <div className="no-licenses">
-          <p>You don't have any dataset licenses yet.</p>
-          <p>Visit the marketplace to purchase access to datasets!</p>
+          <p>You don't have any dataset curator licenses yet.</p>
+          <p>
+            Visit the marketplace to purchase datasets and become a curator!
+          </p>
         </div>
       ) : (
         <div className="licenses-grid">
@@ -126,11 +150,12 @@ const MyLicenses = () => {
             <div key={license.licenseId} className="license-card">
               <div className="license-header">
                 <h3>
-                  {license.metadata.name || `Dataset #${license.datasetId}`}
+                  {license.metadata.name ||
+                    `Dataset #${license.datasetId || "Unknown"}`}
                 </h3>
                 <div className="license-status">
                   {license.isValid ? (
-                    <span className="status-valid">✅ Valid</span>
+                    <span className="status-curator">👑 Dataset Curator</span>
                   ) : (
                     <span className="status-expired">❌ Expired</span>
                   )}
@@ -165,12 +190,23 @@ const MyLicenses = () => {
 
               <div className="license-actions">
                 {license.isValid ? (
-                  <button
-                    className="download-button"
-                    onClick={() => downloadDataset(license)}
-                  >
-                    Download Dataset
-                  </button>
+                  <div className="curator-actions">
+                    <button
+                      className="download-button"
+                      onClick={() => downloadDataset(license)}
+                    >
+                      📥 Download Dataset
+                    </button>
+                    <button
+                      className="feedback-button"
+                      onClick={() => {
+                        setSelectedLicense(license);
+                        setShowFeedback(true);
+                      }}
+                    >
+                      🎯 Provide Feedback
+                    </button>
+                  </div>
                 ) : (
                   <button className="renew-button" disabled>
                     License Expired
@@ -207,6 +243,24 @@ const MyLicenses = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Dataset Feedback Modal */}
+      {showFeedback && selectedLicense && (
+        <DatasetFeedback
+          dataset={{
+            id: selectedLicense.datasetId,
+            title:
+              selectedLicense.metadata.name ||
+              `Dataset #${selectedLicense.datasetId || "Unknown"}`,
+            provider: selectedLicense.provider,
+          }}
+          userAddress={account}
+          onClose={() => {
+            setShowFeedback(false);
+            setSelectedLicense(null);
+          }}
+        />
       )}
     </div>
   );

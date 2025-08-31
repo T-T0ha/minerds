@@ -1,7 +1,5 @@
 # ✅ Implementation Alignment Summary
 
-## 🎯 **Your Requirements vs Implementation**
-
 ### **Requirement 1: Data Storing (Storage Layer)**
 
 > _"Large healthcare datasets are first encrypted client-side before being stored off-chain on IPFS. Utilize dedicated pinning service such as Pinata for data persistence."_
@@ -135,16 +133,6 @@ Express.js Backend
 3. Encryption key retrieved → Secure key storage
 4. File decrypted and served → Authorized customer
 ```
-
-## ✅ **What You DON'T Need to Worry About**
-
-### **❌ NOT Implemented (As Per Your Scope):**
-
-- ❌ DAO governance contracts (not in your scope)
-- ❌ The Graph indexing (not needed for prototype)
-- ❌ Lit Protocol integration (using simpler encryption)
-- ❌ Complex enterprise authentication (wallet-based only)
-- ❌ Advanced compliance automation (basic structure ready)
 
 ## 🚀 **Ready for Production**
 

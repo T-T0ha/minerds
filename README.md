@@ -7,76 +7,121 @@ A blockchain-based framework for secure healthcare dataset tokenization and lice
 ### Prerequisites
 
 - Node.js 18+
-- IPFS Desktop or IPFS CLI
 - MetaMask wallet extension
 
-### 1. Automated Setup
-
-```bash
-# Windows
-./setup.bat
-
-# Linux/Mac
-./setup.sh
-```
-
-### 2. Manual Setup
-
-```bash
 # Install all dependencies
-cd blockchain && npm install && cd ..
+
 cd frontend && npm install && cd ..
 cd backend && npm install && cd ..
 
-# Start IPFS (if using CLI)
-ipfs daemon
+# Start backend (Terminal 1)
 
-# Start blockchain (Terminal 1)
-cd blockchain && npx hardhat node
-
-# Deploy contracts (Terminal 2)
-cd blockchain && npx hardhat run scripts/deploy.js --network localhost
-
-# Start backend (Terminal 3)
 cd backend && npm run dev
 
-# Start frontend (Terminal 4)
+# Start frontend (Terminal 2)
+
 cd frontend && npm run dev
-```
+
+````
 
 ### 3. Access Application
 
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3001
-- **Blockchain RPC**: http://127.0.0.1:8545
+
+
+# Polygon Amoy Deployment Configuration
+
+# =====================================
+
+## 🚀 Deployed Contract Addresses (Polygon Amoy Testnet)
+
+- **DatasetSBT**: `0x2Bd44D8b04c8A6d4fFeA6E209b24157DE9C17efA`
+- **DatasetMarketplace**: `0x7ba515227AD1eC6d9Fb70c0fE72531c438911F14`
+- **Deployer**: `0x80D387Dc5a93a5aD2BDB7Df8eD81f0D021a52950`
+
+## 🔧 Network Configuration
+
+- **Network**: Polygon Amoy Testnet
+- **Chain ID**: 80002
+- **RPC URL**: `https://polygon-amoy.g.alchemy.com/v2/KfUG5RUwO2iaiZq8P_r3E`
+- **Currency**: POL
+- **Block Explorer**: https://amoy.polygonscan.com/
+
+## 📋 Updated Files
+
+### Backend Configuration
+
+- **File**: `backend/.env`
+- **Updated**: Contract addresses and RPC URL for Polygon Amoy
+
+### Frontend Configuration
+
+- **File**: `frontend/src/contracts/contracts.js`
+- **Updated**: Contract addresses and network config for Polygon Amoy
+- **File**: `frontend/src/config/testWallets.js`
+- **Updated**: Wallet configuration for Amoy testnet
+
+## 🔗 Contract Links
+
+- **DatasetSBT on PolygonScan**: https://amoy.polygonscan.com/address/0x2Bd44D8b04c8A6d4fFeA6E209b24157DE9C17efA
+
+- **DatasetMarketplace on PolygonScan**: https://amoy.polygonscan.com/address/0x7ba515227AD1eC6d9Fb70c0fE72531c438911F14
+
+## 🎯 Next Steps
+
+1. **Get Test POL**: Visit https://faucet.polygon.technology/ to get test MATIC
+2. **Add Amoy to MetaMask**:
+
+   - Network Name: Polygon Amoy Testnet
+   - RPC URL: https://polygon-amoy.g.alchemy.com/v2/KfUG5RUwO2iaiZq8P_r3E
+   - Chain ID: 80002
+   - Currency Symbol: POL
+   - Block Explorer: https://amoy.polygonscan.com/
+
+3. **Restart Services**:
+
+   ```bash
+   # Backend
+   cd backend && npm start
+
+   # Frontend
+   cd frontend && npm run dev
+````
+
+4. **Test the Application**:
+   - Connect MetaMask to Polygon Amoy
+   - Test dataset upload, purchase, and curator features
 
 ## 📁 Complete Architecture
 
 ```
+
 Healthcare Data Provenance Framework/
-├── blockchain/                    # Smart contracts & deployment
-│   ├── contracts/                # Solidity contracts
-│   │   ├── DatasetSBT.sol        # Soul-Bound Token for datasets
-│   │   └── DatasetMarketplace.sol # Licensing marketplace
-│   ├── scripts/deploy.js         # Contract deployment
-│   └── hardhat.config.js         # Blockchain configuration
-├── backend/                      # IPFS storage & API
-│   ├── services/                 # Core business logic
-│   │   ├── ipfsService.js        # IPFS file operations
-│   │   └── blockchainService.js  # Smart contract integration
-│   ├── middleware/               # Authentication & validation
-│   └── server.js                 # Express.js API server
-├── frontend/                     # React Web Application
-│   ├── src/components/           # UI components
-│   │   ├── Header.jsx            # Wallet connection
-│   │   ├── DatasetMarketplace.jsx # Browse & purchase datasets
-│   │   ├── DatasetUpload.jsx     # Upload new datasets
-│   │   └── MyLicenses.jsx        # View owned licenses
-│   ├── src/context/              # React state management
-│   │   └── Web3Context.jsx       # Blockchain integration
-│   └── src/config/               # Configuration
-│       └── testWallets.js        # Hardhat test accounts
-└── README.md                     # This file
+├── blockchain/ # Smart contracts & deployment
+│ ├── contracts/ # Solidity contracts
+│ │ ├── DatasetSBT.sol # Soul-Bound Token for datasets
+│ │ └── DatasetMarketplace.sol # Licensing marketplace
+│ ├── scripts/deploy.js # Contract deployment
+│ └── hardhat.config.js # Blockchain configuration
+├── backend/ # IPFS storage & API
+│ ├── services/ # Core business logic
+│ │ ├── ipfsService.js # IPFS file operations
+│ │ └── blockchainService.js # Smart contract integration
+│ ├── middleware/ # Authentication & validation
+│ └── server.js # Express.js API server
+├── frontend/ # React Web Application
+│ ├── src/components/ # UI components
+│ │ ├── Header.jsx # Wallet connection
+│ │ ├── DatasetMarketplace.jsx # Browse & purchase datasets
+│ │ ├── DatasetUpload.jsx # Upload new datasets
+│ │ └── MyLicenses.jsx # View owned licenses
+│ ├── src/context/ # React state management
+│ │ └── Web3Context.jsx # Blockchain integration
+│ └── src/config/ # Configuration
+│ └── testWallets.js # Hardhat test accounts
+└── README.md # This file
+
 ```
 
 ## 🔧 Core Features (Fully Implemented)
@@ -172,24 +217,6 @@ Healthcare Data Provenance Framework/
 3. **IPFS retrieval** → File fetched from IPFS if authorized
 4. **Secure delivery** → File streamed to authorized user
 
-## 🧪 Testing with Test Wallets
-
-The platform includes pre-configured Hardhat test accounts for easy testing:
-
-### Available Test Accounts
-
-- **Account #0 (Admin)**: `0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266`
-- **Account #1 (Provider)**: `0x70997970C51812dc3A010C7d01b50e0d17dc79C8`
-- **Account #2 (Customer)**: `0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC`
-
-### Test Workflow
-
-1. Click "Use Test Wallet" in header (development mode)
-2. Switch between accounts using dropdown
-3. Upload datasets as Provider account
-4. Purchase licenses as Customer account
-5. Download datasets with valid licenses
-
 ## 🚀 Production Deployment
 
 ### IPFS Production Setup
@@ -199,19 +226,7 @@ The platform includes pre-configured Hardhat test accounts for easy testing:
 # Sign up at https://pinata.cloud
 # Update .env with Pinata credentials
 
-# Option 2: Infura IPFS
-# Sign up at https://infura.io
-# Update .env with Infura project details
-
-# Option 3: Self-hosted IPFS cluster
-# Set up IPFS cluster for redundancy
-```
-
 ### Blockchain Deployment
-
-```bash
-# Deploy to Polygon Mumbai (Testnet)
-npx hardhat run scripts/deploy.js --network mumbai
 
 # Deploy to Polygon Mainnet (Production)
 npx hardhat run scripts/deploy.js --network polygon

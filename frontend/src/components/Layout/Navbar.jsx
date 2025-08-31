@@ -33,11 +33,11 @@ const Navbar = ({ activeTab, setActiveTab }) => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <span className="brand-icon">💎</span>
-          <div className="brand-content">
-            <div className="brand-text">Clarity</div>
-            <div className="brand-subtitle">Healthcare Data Marketplace</div>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Clarity - Healthcare Data Marketplace"
+            className="brand-logo"
+          />
         </div>
 
         <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>

@@ -119,7 +119,7 @@
 }
 
 .dataset-info {
-  background: white;
+  /* background: white; */
   padding: 1rem 1.5rem;
   border-radius: 12px;
   border-left: 4px solid #667eea;
@@ -168,7 +168,7 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: white;
+  /* background: white; */
 }
 
 .feedback-type input {

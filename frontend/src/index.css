@@ -3,9 +3,37 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Light mode colors - Blockchain inspired */
+  --bg-primary: #0a0f1c;
+  --bg-secondary: #1a2332;
+  --bg-tertiary: #2a3441;
+  --text-primary: #ffffff;
+  --text-secondary: #b8d4e3;
+  --text-tertiary: #8fb3c9;
+  --border-primary: #2dd4bf;
+  --border-secondary: #14b8a6;
+  --shadow-primary: rgba(45, 212, 191, 0.2);
+  --shadow-secondary: rgba(45, 212, 191, 0.4);
+
+  /* Brand colors - Matching the blockchain theme */
+  --brand-primary: #2dd4bf;
+  --brand-secondary: #0891b2;
+  --accent-primary: #06b6d4;
+  --accent-secondary: #0891b2;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  /* Blockchain specific colors */
+  --cyber-cyan: #00d4ff;
+  --electric-blue: #0066ff;
+  --neon-teal: #00ffcc;
+  --dark-navy: #0a0f1c;
+  --medium-navy: #1a2332;
+
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,13 +41,47 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Dark mode (now the primary theme) */
+[data-theme="dark"] {
+  /* Same as root - this is now our primary theme */
+  --bg-primary: #0a0f1c;
+  --bg-secondary: #1a2332;
+  --bg-tertiary: #2a3441;
+  --text-primary: #ffffff;
+  --text-secondary: #b8d4e3;
+  --text-tertiary: #8fb3c9;
+  --border-primary: #2dd4bf;
+  --border-secondary: #14b8a6;
+  --shadow-primary: rgba(45, 212, 191, 0.2);
+  --shadow-secondary: rgba(45, 212, 191, 0.4);
+
+  color-scheme: dark;
+}
+
+/* Light mode (alternative) */
+[data-theme="light"] {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #dcfce7;
+  --bg-tertiary: #bbf7d0;
+  --text-primary: #0a0f1c;
+  --text-secondary: #1f2937;
+  --text-tertiary: #6b7280;
+  --border-primary: #2dd4bf;
+  --border-secondary: #14b8a6;
+  --shadow-primary: rgba(45, 212, 191, 0.15);
+  --shadow-secondary: rgba(45, 212, 191, 0.25);
+
+  color-scheme: light;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--brand-primary);
   text-decoration: inherit;
+  transition: color 0.3s ease;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--brand-secondary);
 }
 
 body {
@@ -28,11 +90,15 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: var(--text-primary);
 }
 
 button {
@@ -42,27 +108,17 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.3s ease;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--brand-primary);
+  background-color: var(--bg-tertiary);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
 }

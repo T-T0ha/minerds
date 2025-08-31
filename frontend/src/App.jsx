@@ -1,6 +1,8 @@
 import React from "react";
 import { Web3Provider } from "./context/Web3Context";
+import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Layout/Navbar";
+import ThemeToggle from "./components/Layout/ThemeToggle";
 import Dashboard from "./components/Dashboard";
 import DatasetMarketplace from "./components/DatasetMarketplace";
 import DatasetUpload from "./components/DatasetUpload";
@@ -39,12 +41,15 @@ function App() {
   };
 
   return (
-    <Web3Provider>
-      <div className="App">
-        <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
-        <main className="main-content">{renderContent()}</main>
-      </div>
-    </Web3Provider>
+    <ThemeProvider>
+      <Web3Provider>
+        <div className="App">
+          {/* <ThemeToggle /> */}
+          <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+          <main className="main-content">{renderContent()}</main>
+        </div>
+      </Web3Provider>
+    </ThemeProvider>
   );
 }
 

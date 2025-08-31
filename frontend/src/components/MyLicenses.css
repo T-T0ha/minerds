@@ -2,51 +2,47 @@
 .licenses-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 70px);
 }
 
-.li.status-curator {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-  color: #667eea;
-  padding: 0.5rem 1rem;
-  border-radius: 15px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: 2px solid rgba(102, 126, 234, 0.2);
-}
-
-.status-expired {
-  background: rgba(245, 101, 101, 0.1);
-  color: #f56565;
-  padding: 0.5rem 1rem;
-  border-radius: 15px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: 2px solid rgba(245, 101, 101, 0.2);
-}display: flex;
+.licenses-header {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
 }
 
 .licenses-header h2 {
-  color: #2c3e50;
+  color: var(--text-primary);
   font-size: 2rem;
   margin: 0;
 }
 
 .refresh-button {
-  background-color: #3498db;
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--cyber-cyan) 100%
+  );
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(45, 212, 191, 0.3);
 }
 
 .refresh-button:hover:not(:disabled) {
-  background-color: #2980b9;
+  background: linear-gradient(
+    135deg,
+    var(--cyber-cyan) 0%,
+    var(--brand-primary) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow: 0 6px 25px rgba(45, 212, 191, 0.4);
 }
 
 .refresh-button:disabled {
@@ -57,35 +53,58 @@
 .no-licenses {
   text-align: center;
   padding: 3rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(26, 35, 50, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(45, 212, 191, 0.15);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  backdrop-filter: blur(15px);
 }
 
 .no-licenses p {
   margin-bottom: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
 .licenses-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .license-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid #e1e5e9;
+  background: rgba(26, 35, 50, 0.9);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px rgba(45, 212, 191, 0.15);
+  border: 1px solid rgba(45, 212, 191, 0.2);
+  backdrop-filter: blur(15px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.license-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-primary),
+    var(--cyber-cyan),
+    transparent
+  );
+  opacity: 0.8;
 }
 
 .license-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 60px rgba(45, 212, 191, 0.25);
+  border-color: var(--cyber-cyan);
 }
 
 .license-header {
@@ -94,14 +113,15 @@
   align-items: flex-start;
   margin-bottom: 1rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(45, 212, 191, 0.2);
 }
 
 .license-header h3 {
-  color: #2c3e50;
-  font-size: 1.3rem;
+  color: var(--text-primary);
+  font-size: 1.4rem;
   margin: 0;
   flex: 1;
+  font-weight: 700;
 }
 
 .license-status {
@@ -110,23 +130,37 @@
 }
 
 .status-valid {
-  background-color: #d5f4e6;
-  color: #27ae60;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  background: rgba(45, 212, 191, 0.1);
+  color: var(--brand-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
   font-size: 0.875rem;
-  font-weight: 500;
-  border: 1px solid #b8e6d2;
+  font-weight: 600;
+  border: 2px solid rgba(45, 212, 191, 0.3);
+}
+
+.status-curator {
+  background: linear-gradient(
+    135deg,
+    rgba(45, 212, 191, 0.1) 0%,
+    rgba(6, 182, 212, 0.1) 100%
+  );
+  color: var(--brand-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 2px solid rgba(45, 212, 191, 0.3);
 }
 
 .status-expired {
-  background-color: #fdeaea;
-  color: #e74c3c;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
   font-size: 0.875rem;
-  font-weight: 500;
-  border: 1px solid #f5b7b1;
+  font-weight: 600;
+  border: 2px solid rgba(239, 68, 68, 0.3);
 }
 
 .license-info {
@@ -134,13 +168,15 @@
 }
 
 .license-info p {
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .license-info strong {
-  color: #2c3e50;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .license-actions {
@@ -149,36 +185,46 @@
 
 .download-button {
   width: 100%;
-  background-color: #27ae60;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary) 0%,
+    var(--accent-secondary) 100%
+  );
   color: white;
   border: none;
-  padding: 0.875rem 1rem;
-  border-radius: 6px;
+  padding: 1rem;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
 }
 
 .download-button:hover {
-  background-color: #229954;
-  transform: translateY(-1px);
+  background: linear-gradient(
+    135deg,
+    var(--accent-secondary) 0%,
+    var(--accent-primary) 100%
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(6, 182, 212, 0.5);
 }
 
 .renew-button {
   width: 100%;
-  background-color: #95a5a6;
-  color: white;
-  border: none;
-  padding: 0.875rem 1rem;
-  border-radius: 6px;
+  background: rgba(107, 114, 128, 0.3);
+  color: var(--text-secondary);
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  padding: 1rem;
+  border-radius: 12px;
   cursor: not-allowed;
   font-weight: 500;
   font-size: 1rem;
 }
 
 .license-metadata {
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(45, 212, 191, 0.2);
   padding-top: 1rem;
 }
 
@@ -188,35 +234,42 @@
 
 .license-metadata summary {
   font-weight: 500;
-  color: #3498db;
+  color: var(--brand-primary);
   padding: 0.5rem 0;
   outline: none;
   user-select: none;
+  transition: color 0.3s ease;
 }
 
 .license-metadata summary:hover {
-  color: #2980b9;
+  color: var(--cyber-cyan);
 }
 
 .metadata-content {
   padding: 1rem 0 0.5rem 0;
-  border-left: 3px solid #ecf0f1;
+  border-left: 3px solid rgba(45, 212, 191, 0.3);
   padding-left: 1rem;
   margin-top: 0.5rem;
+  background: rgba(45, 212, 191, 0.05);
+  border-radius: 0 8px 8px 0;
 }
 
 .metadata-content p {
   margin-bottom: 0.75rem;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
 .metadata-content strong {
-  color: #2c3e50;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
+  .licenses-container {
+    padding: 1rem;
+  }
+
   .licenses-header {
     flex-direction: column;
     gap: 1rem;
@@ -239,13 +292,17 @@
 
 /* Curator Actions Styles */
 .curator-status {
-  background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
-  color: #065f46;
+  background: linear-gradient(
+    135deg,
+    rgba(45, 212, 191, 0.1) 0%,
+    rgba(6, 182, 212, 0.1) 100%
+  );
+  color: var(--brand-primary);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
-  border: 2px solid #0d9488;
+  border: 2px solid rgba(45, 212, 191, 0.3);
   margin-bottom: 1rem;
   display: inline-block;
 }
